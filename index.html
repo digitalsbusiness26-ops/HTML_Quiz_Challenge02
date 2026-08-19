@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML & CSS Mastery Quiz Game</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #111827;
+            --card-bg: rgba(255, 255, 255, 0.94);
+            --text: #1f2937;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            transition: background-image 0.8s ease-in-out;
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Fireworks Canvas Overlay */
+        #fireworks-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .quiz-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 580px;
+            padding: 30px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            margin-bottom: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .state-badge {
+            background-color: #e0e7ff;
+            color: var(--primary);
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-top-reset {
+            position: absolute;
+            right: 0;
+            top: 0;
+            background-color: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #d1d5db;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-top-reset:hover {
+            background-color: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .progress-bar-container {
+            background-color: #e5e7eb;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            background-color: var(--primary);
+            height: 100%;
+            width: 4%;
+            transition: width 0.3s ease;
+        }
+
+        .question-box {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 25px 0 15px 0;
+            line-height: 1.4;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        button.btn-submit {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button.btn-submit:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .feedback {
+            min-height: 24px;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .feedback.correct { color: var(--success); }
+        .feedback.wrong { color: var(--danger); }
+
+        .victory-screen {
+            text-align: center;
+            display: none;
+        }
+
+        .victory-screen h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="fireworks-canvas"></canvas>
+
+<div class="quiz-card">
+    <div class="header">
+        <button class="btn-top-reset" onclick="resetGame()" title="Start over from Question 1">🔄 Reset Game</button>
+        <div class="state-badge" id="state-badge">State 1 of 5</div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <div id="game-content">
+        <div class="question-box" id="question-text">Loading question...</div>
+
+        <form id="quiz-form">
+            <div class="input-group">
+                <input type="text" id="answer-input" placeholder="Type your answer here..." autocomplete="off" required>
+                <button type="submit" class="btn-submit">Submit</button>
+            </div>
+        </form>
+
+        <div class="feedback" id="feedback"></div>
+    </div>
+
+    <div class="victory-screen" id="victory-screen">
+        <h2>🎉 Level Complete!</h2>
+        <p>Congratulations! You passed all 5 states and completed all 25 HTML/CSS questions!</p>
+        <br>
+        <button class="btn-submit" onclick="resetGame()">Play Again</button>
+    </div>
+</div>
+
+<script>
+    // --- FIREWORKS SYSTEM ---
+    const canvas = document.getElementById('fireworks-canvas');
+    const ctx = canvas.getContext('2d');
+    let fireworksAnimId = null;
+    let particles = [];
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+        constructor(x, y, color) {
+            this.x = x;
+            this.y = y;
+            this.color = color;
+            this.radius = Math.random() * 3 + 2;
+            this.velocity = {
+                x: (Math.random() - 0.5) * (Math.random() * 8 + 2),
+                y: (Math.random() - 0.5) * (Math.random() * 8 + 2)
+            };
+            this.alpha = 1;
+            this.friction = 0.96;
+            this.gravity = 0.08;
+        }
+
+        draw() {
+            ctx.save();
+            ctx.globalAlpha = this.alpha;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+            ctx.restore();
+        }
+
+        update() {
+            this.velocity.x *= this.friction;
+            this.velocity.y *= this.friction;
+            this.velocity.y += this.gravity;
+            this.x += this.velocity.x;
+            this.y += this.velocity.y;
+            this.alpha -= 0.012;
+        }
+    }
+
+    function createFirework(x, y) {
+        const colors = ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#ffffff'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const count = 40;
+        for (let i = 0; i < count; i++) {
+            particles.push(new Particle(x, y, color));
+        }
+    }
+
+    function animateFireworks() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Randomly launch fireworks from various locations
+        if (Math.random() < 0.15) {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * (canvas.height * 0.6);
+            createFirework(x, y);
+        }
+
+        particles.forEach((particle, index) => {
+            if (particle.alpha > 0) {
+                particle.update();
+                particle.draw();
+            } else {
+                particles.splice(index, 1);
+            }
+        });
+
+        fireworksAnimId = requestAnimationFrame(animateFireworks);
+    }
+
+    function startFireworks() {
+        if (!fireworksAnimId) {
+            animateFireworks();
+        }
+    }
+
+    function stopFireworks() {
+        if (fireworksAnimId) {
+            cancelAnimationFrame(fireworksAnimId);
+            fireworksAnimId = null;
+        }
+        particles = [];
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+
+    // --- QUIZ GAME SYSTEM ---
+
+    const stateBackgrounds = {
+        1: "https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=1920&q=80", // Florida Beach
+        2: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=80", // Airplane Flying
+        3: "https://images.unsplash.com/photo-1530089711124-9ca31fb9e863?auto=format&fit=crop&w=1920&q=80", // Desert Highway
+        4: "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=1920&q=80", // California Golden Gate
+        5: "https://images.unsplash.com/photo-1542259009477-d625272157b7?auto=format&fit=crop&w=1920&q=80"  // Hawaii Tropical
+    };
+
+     const masterQuestions = [
+        // State 1 Topics
+        { q: "Which attribute specifies the file path to an image in an <img> tag?", a: "src" },
+        { q: "Which boolean attribute must be added to a <video> tag to enable playback buttons and volume adjustments on the player?", a: "controls" },
+        { q: "To improve SEO, should image filenames be generic (like img1.jpg) or descriptive?", a: "descriptive" },
+        { q: "Inside a <video> or <audio> element, should fallback text be placed below the <source> tags or above them?", a: "below" },
+        { q: "What type of link points to another page on the same website (internal or external)?", a: "internal" },
+
+        // State 2 Topics
+        { q: "What HTML tag is used to embed video clips directly into a page?", a: "<video>" },
+        { q: "Text placed between <video> tags acts as fallback text for older browsers. True or False?", a: "true" },
+        { q: "Which HTML element is used to embed audio files?", a: "<audio>" },
+        { q: "In CSS specificity, which styling method has the highest precedence over the others: inline CSS, internal style, or external style?", a: "inline css" },
+        { q: "Which target attribute opens an external link in a new tab?", a: "target=\"_blank\"" },
+
+        // State 3 Topics
+        { q: "Which parent HTML element wraps input fields to collect and submit user data?", a: "<form>" },
+        { q: "Which form submission method appends data directly into the URL bar (get or post)?", a: "get" },
+        { q: "Which form method should be used when sending sensitive data like passwords (get or post)?", a: "post" },
+        { q: "Which input type allows a user to select only ONE choice from a group?", a: "radio" },
+        { q: "Which input type allows a user to select MULTIPLE options at once?", a: "checkbox" },
+
+        // State 4 Topics
+        { q: "Which multi-line HTML tag allows users to enter large blocks of text?", a: "<textarea>" },
+        { q: "Which attribute sets the visible character width of a <textarea>?", a: "cols" },
+        { q: "Which element works inside <select> to define individual choices in a drop-down list?", a: "<option>" },
+        { q: "Which attribute inside the <form> tag specifies whether data is sent via GET or POST?", a: "method" },
+        { q: "Which tag creates a drop-down menu list in an HTML form?", a: "<select>" },
+
+        // State 5 Topics
+        { q: "In standard CSS specificity rules (excluding !important), which selector or styling mechanism ranks 3rd in hierarchy precedence?", a: "class" },
+        { q: "Which CSS property changes the color of text inside an element?", a: "color" },
+        { q: "Which CSS property specifies the font face (e.g., Arial, sans-serif)?", a: "font-family" },
+        { q: "Which generic inline container element wraps small snippets of text?", a: "<span>" },
+        { q: "Which attribute assigns a unique identifier to a single HTML element on a page?", a: "id" }
+    ];
+
+
+    function shuffleArray(array) {
+        let arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    let quizData = [];
+    let currentIndex = 0;
+
+    const stateBadge = document.getElementById('state-badge');
+    const progressBar = document.getElementById('progress-bar');
+    const questionText = document.getElementById('question-text');
+    const answerInput = document.getElementById('answer-input');
+    const quizForm = document.getElementById('quiz-form');
+    const feedback = document.getElementById('feedback');
+    const gameContent = document.getElementById('game-content');
+    const victoryScreen = document.getElementById('victory-screen');
+
+    function initGame() {
+        stopFireworks();
+        const savedIndex = localStorage.getItem('html_quiz_index');
+        const savedQuestions = localStorage.getItem('html_quiz_questions');
+
+        if (savedQuestions && savedIndex !== null) {
+            quizData = JSON.parse(savedQuestions);
+            currentIndex = parseInt(savedIndex, 10);
+        } else {
+            quizData = shuffleArray(masterQuestions);
+            currentIndex = 0;
+            saveProgress();
+        }
+
+        loadQuestion();
+    }
+
+    function saveProgress() {
+        localStorage.setItem('html_quiz_index', currentIndex);
+        localStorage.setItem('html_quiz_questions', JSON.stringify(quizData));
+    }
+
+    function updateBackground(stateNum) {
+        if (stateBackgrounds[stateNum]) {
+            document.body.style.backgroundImage = `url('${stateBackgrounds[stateNum]}')`;
+        }
+    }
+
+    function loadQuestion() {
+        if (currentIndex >= quizData.length) {
+            gameContent.style.display = 'none';
+            victoryScreen.style.display = 'block';
+            stateBadge.innerText = "Completed!";
+            progressBar.style.width = '100%';
+            startFireworks();
+            return;
+        }
+
+        stopFireworks();
+        gameContent.style.display = 'block';
+        victoryScreen.style.display = 'none';
+
+        const currentStateNum = Math.floor(currentIndex / 5) + 1;
+        updateBackground(currentStateNum);
+
+        stateBadge.innerText = `State ${currentStateNum} of 5`;
+        const currentQ = quizData[currentIndex];
+        questionText.innerText = `Q${currentIndex + 1}. ${currentQ.q}`;
+        progressBar.style.width = `${((currentIndex + 1) / quizData.length) * 100}%`;
+        answerInput.value = '';
+        answerInput.focus();
+    }
+
+    quizForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const normalize = str => str.trim().toLowerCase().replace(/'/g, '"');
+        
+        const userAns = normalize(answerInput.value);
+        const correctAns = normalize(quizData[currentIndex].a);
+
+        if (userAns === correctAns) {
+            feedback.className = 'feedback correct';
+            feedback.innerText = 'Correct! Advancing...';
+            currentIndex++;
+            saveProgress();
+            
+            setTimeout(() => {
+                feedback.innerText = '';
+                loadQuestion();
+            }, 800);
+        } else {
+            feedback.className = 'feedback wrong';
+            feedback.innerText = 'Incorrect. Try again!';
+        }
+    });
+
+    function resetGame() {
+        if (confirm("Are you sure you want to reset your quiz game? This will clear your progress and start over from State 1 with reshuffled questions.")) {
+            localStorage.removeItem('html_quiz_index');
+            localStorage.removeItem('html_quiz_questions');
+            feedback.innerText = '';
+            initGame();
+        }
+    }
+
+    initGame();
+</script>
+
+</body>
+</html>
