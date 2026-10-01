@@ -324,38 +324,38 @@
 
      const masterQuestions = [
         // State 1 Topics
-        { q: "Which attribute specifies the file path to an image in an <img> tag?", a: "src" },
-        { q: "Which boolean attribute must be added to a <video> tag to enable playback buttons and volume adjustments on the player?", a: "controls" },
-        { q: "To improve SEO, should image filenames be generic (like img1.jpg) or descriptive?", a: "descriptive" },
-        { q: "Inside a <video> or <audio> element, should fallback text be placed below the <source> tags or above them?", a: "below" },
+        { q: "A student developer is building a responsive image banner for the local barbershop website using the `<picture>` element. In addition to the `media` attribute used for screen size breakpoints, which other key attributes are typically used on a `<source>` tag inside a `<picture>` element to specify the image files and image types?", a: "srcset" },
+        { q: "A student developer is designing the main navigation menu for the local barbershop website. They want to style all unvisited hyperlinked anchor tags with a specific custom color. Which CSS pseudo-class targets links that have not yet been visited by the user?", a: "a:link" },
+        { q: "A student developer applies three different CSS selectors targeting the same hair service card on the local barbershop website: an element selector (`p`), a class selector (`.card`), and an ID selector (`#header`). Which selector category has the lowest specificity weight in the CSS cascade?", a: "p" },
+        { q: "A student developer is building an interactive schedule for the local public library. To make book titles stand out on the events page, they want to render them in italics. Which CSS property determines whether text appears in an italic or normal face?", a: "font-style" },
         { q: "What type of link points to another page on the same website (internal or external)?", a: "internal" },
 
         // State 2 Topics
-        { q: "What HTML tag is used to embed video clips directly into a page?", a: "<video>" },
-        { q: "Text placed between <video> tags acts as fallback text for older browsers. True or False?", a: "true" },
-        { q: "Which HTML element is used to embed audio files?", a: "<audio>" },
+        { q: "A student developer is inspecting the default browser styles on the local barbershop website. Before any custom CSS is applied, what default text color does an unvisited hyperlink (`:link`) display?", a: "blue" },
+        { q: "A student developer is designing a community schedule board for the local sports complex. They want to style links that a user has already clicked on so they turn purple. Which CSS pseudo-class targets a hyperlink that has previously been visited?", a: "a:visited" },
+        { q: "A student developer is building an image gallery for a local garden center website using the `<picture>` element to serve responsive images. To ensure older browsers that do not support `<picture>` still render an image, which HTML tag must be included inside `<picture>` as a fallback?", a: "<img>" },
         { q: "In CSS specificity, which styling method has the highest precedence over the others: inline CSS, internal style, or external style?", a: "inline css" },
         { q: "Which target attribute opens an external link in a new tab?", a: "target=\"_blank\"" },
 
         // State 3 Topics
-        { q: "Which parent HTML element wraps input fields to collect and submit user data?", a: "<form>" },
-        { q: "Which form submission method appends data directly into the URL bar (get or post)?", a: "get" },
-        { q: "Which form method should be used when sending sensitive data like passwords (get or post)?", a: "post" },
-        { q: "Which input type allows a user to select only ONE choice from a group?", a: "radio" },
-        { q: "Which input type allows a user to select MULTIPLE options at once?", a: "checkbox" },
+        { q: "A student developer is designing a schedule for the local music theater website using CSS Flexbox. To align performer cards along the cross axis (vertically) inside a flex container row, which property should they apply?", a: "align-items" },
+        { q: "A student developer is structuring the homepage for a local swimming pool facility. Which semantic HTML tag should wrap the dominant, unique content of the page, excluding recurring layout elements like site headers and footers?", a: "<main>" },
+        { q: "A student developer is building the website for a local community barbershop. Which semantic HTML element should contain introductory content, site navigation links, or search controls typically located at the top of a document or section?", a: "<header>" },
+        { q: "A student developer is building a digital catalogue for the local music theater. They want structural elements like `<div>` tags to lay out horizontally side-by-side without taking up the full width of the line. Which CSS `display` property value causes an element to generate an inline element box that does not start on a new line?", a: "inline" },
+        { q: "The web designer for a local public library wants to add 25 pixels of space outside the left boundary of a book highlight card. Which CSS property applies external spacing specifically to the left side of an element?", a: "margin-left" },
 
         // State 4 Topics
-        { q: "Which multi-line HTML tag allows users to enter large blocks of text?", a: "<textarea>" },
-        { q: "Which attribute sets the visible character width of a <textarea>?", a: "cols" },
-        { q: "Which element works inside <select> to define individual choices in a drop-down list?", a: "<option>" },
-        { q: "Which attribute inside the <form> tag specifies whether data is sent via GET or POST?", a: "method" },
-        { q: "Which tag creates a drop-down menu list in an HTML form?", a: "<select>" },
-        { q: "Which attribute inside the <form> tag specifies the URL where form data is sent?", a: "action" },
+        { q: "A student developer is designing an event directory for a local garden center. Which semantic HTML element is specifically intended to wrap major blocks of site navigation links?", a: "<nav>" },
+        { q: "The web designer for a local garden center wants to add 20 pixels of internal space between the content and the right border of a plant details box. Which CSS property applies internal spacing specifically to the right side of an element?", a: "padding-right" },
+        { q: "The web designer for a local music theater wants to give event announcement cards a dashed outline. Which CSS property defines the line appearance—such as solid, dashed, or dotted—of an element's border?", a: "border-style" },
+        { q: "The web manager for the local community sports arena needs badge elements to sit on the same line as neighboring text while still respecting custom height and width settings. Which CSS `display` value provides inline placement alongside customizable box-model dimensions?", a: "inline-block" },
+        { q: "The web developer for a local swimming pool complex wants to display service amenities using square bullet points instead of standard round dots. Which CSS property sets the marker type for list items in an unordered list?", a: "list-style-type" },
+        { q: "A frontend engineer updating the match schedule for a local sports arena wants to add a title element inside a HTML `<table>` to clearly summarize its contents for accessibility. Which HTML tag provides an official title for a table?", a: "<caption>" },
 
         // State 5 Topics
-        { q: "In standard CSS specificity rules (excluding !important), which selector or styling mechanism ranks 3rd in hierarchy precedence?", a: "class" },
+        { q: "In standard CSS specificity rules such as class, id, internal, external, inline and browser (excluding !important), which selector or styling mechanism ranks 3rd in hierarchy precedence?", a: "class" },
         { q: "Which CSS property changes the color of text inside an element?", a: "color" },
-        { q: "Which CSS property specifies the font face (e.g., Arial, sans-serif)?", a: "font-family" },
+        { q: "The web manager for a local community barbershop wants to remove underlines from all navigation menu links. Which CSS property controls visual text decorations such as underlines, overlines, and line-throughs?", a: "text-decoration" },
         { q: "Which generic inline container element wraps small snippets of text?", a: "<span>" },
         { q: "Which attribute assigns a unique identifier to a single HTML element on a page?", a: "id" },
         { q: "Which type of link uses a full URL including the protocol (e.g., href='https://www.example.com/about.html') to connect to a specific web page?", a: "Absolute link" }
